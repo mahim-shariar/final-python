@@ -10,7 +10,7 @@ class Users(ABC):
 
 
 class Bank_account(Users):
-    def __init__(self, name, email, address, account_type,password) -> None:
+    def __init__(self, name, email, address, account_type, password) -> None:
         super().__init__(name, email, address)
         self.account_type = account_type
         self.inital_balance = 0
@@ -25,12 +25,12 @@ class Bank_account(Users):
         print(f"Email:{self.email}")
         print(f"Account Type:{self.account_type}")
         print(f"Account Number:{self.account_number}")
-    
 
-    def deposit(self, amount):
+    def deposit(self, amount, bank):
         if amount > 0:
             self.inital_balance += amount
             self.all_transaction.append(f"You are deposit :{amount}")
+            bank.total_bank_balance += amount
 
             print("Deposit successful")
 
@@ -38,10 +38,12 @@ class Bank_account(Users):
             print("Invalid number")
 
     def withdraw(self, amount, bank):
-        if amount > 0 and amount < self.inital_balance:
-            if bank.total_bank_balance > amount:
+        print(bank.total_bank_balance)
+        if amount > 0 and amount <= self.inital_balance:
+            if amount <= bank.total_bank_balance:
                 self.inital_balance -= amount
                 self.all_transaction.append(f"You are Wtihdraw :{amount}")
+                bank.total_bank_balance -= amount
                 print("withdraw successful")
             else:
                 print("bank is bankrupt")
@@ -52,11 +54,13 @@ class Bank_account(Users):
         print(f"Your Total Balance: {self.inital_balance}")
 
     def take_loan(self, amount, bank):
-        if amount > 0 and self.loan_count <= 2 and bank.total_bank_balance > amount and bank.is_loan == True: 
+        if amount > 0 and self.loan_count <= 2 and bank.total_bank_balance >= amount and bank.is_loan == True:
             self.inital_balance += amount
             self.loan_count += 1
-            self.all_transaction.append(f"You Take loan from the bank: {amount} ")
+            self.all_transaction.append(
+                f"You Take loan from the bank: {amount} ")
             self.loan_amount += amount
+            bank.total_bank_balance -= amount
             print("Take Loan successful")
 
         else:
@@ -67,21 +71,24 @@ class Bank_account(Users):
             if account.account_number == account_number and amount <= self.inital_balance:
                 account.inital_balance += amount
                 self.inital_balance -= amount
-                self.all_transaction.append(f"Transferred {amount} to account {account_number}")
-                account.all_transaction.append(f"Recived {amount} from account {account_number}")
+                self.all_transaction.append(
+                    f"Transferred {amount} to account {account_number}")
+                account.all_transaction.append(
+                    f"Recived {amount} from account {account_number}")
                 print("Transfer successful!")
                 return
         print("Account does not exist.!!")
-    
+
     def all_transaction_history(self):
+        print("--------------------ALL Transaction----------------------")
         for trans in self.all_transaction:
-            print("--------------------ALL Transaction----------------------")
             print(f"{trans}\n")
-            print("---------------------------------------------------------")
+
+        print("---------------------------------------------------------")
 
 
 class Admin:
-    def __init__(self, name,password) -> None:
+    def __init__(self, name, password) -> None:
         self.password = password
         self.name = name
 
@@ -104,12 +111,10 @@ class Admin:
         print("------------------------------------------------")
 
     def bank_balance(self, bank):
-        print(f"{bank.name} Total Balance is : {bank.total_balance()}")
-    
-    def loan_amount(self,bank):
+        print(f"{bank.name} Total Balance is : {bank.total_bank_balance}")
+
+    def loan_amount(self, bank):
         total_loan = 0
         for account in bank.AllBankAccount:
-            total_loan += account.inital_balance
+            total_loan += account.loan_amount
         return total_loan
-    
-

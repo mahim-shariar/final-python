@@ -21,18 +21,18 @@ def user_menu(user_account):
         choice = int(input("Enter your choice: "))
 
         if choice == 1:
-            amount = float(input("Enter the amount to deposit: "))
-            user_account.deposit(amount)
+            amount = int(input("Enter the amount to deposit: "))
+            user_account.deposit(amount,mama_bank)
         elif choice == 2:
-            amount = float(input("Enter the amount to withdraw: "))
+            amount = int(input("Enter the amount to withdraw: "))
             user_account.withdraw(amount, mama_bank)
         elif choice == 3:
             user_account.check_balance()
         elif choice == 4:
-            amount = float(input("Enter the loan amount: "))
+            amount = int(input("Enter the loan amount: "))
             user_account.take_loan(amount, mama_bank)
         elif choice == 5:
-            amount = float(input("Enter the amount to transfer: "))
+            amount = int(input("Enter the amount to transfer: "))
             account_number = input("Enter the User account number: ")
             user_account.transfer_amount(amount, account_number, mama_bank)
         elif choice == 6:
@@ -92,8 +92,10 @@ def admin_menu():
                 onoff = input("Enter Your Choice (On/Off): ")
                 if onoff.lower() == 'on':
                     mama_bank.is_loan = True
+                    print("Loan Feature is Available Now !!")
                 elif onoff.lower() == 'off':
                     mama_bank.is_loan = False
+                    print("Loan Feature is Not Available Now !!")
             elif choice == 7:
                 print("Exiting admin menu.")
                 break
@@ -132,11 +134,13 @@ while True:
             address = input("Enter Your address: ")
             account_type = input("Enter Your Account Type (savings/current): ")
             password = password = input("Enter Your password: ")
-
-            user_account = Bank_account(
-                name, email, address, account_type, password)
-            mama_bank.add_account(user_account)
-            user_menu(user_account)
+            if account_type.lower() == 'savings' or account_type.lower() == 'current':
+                user_account = Bank_account(
+                    name, email, address, account_type, password)
+                mama_bank.add_account(user_account)
+                user_menu(user_account)
+            else:
+                print("You enter a wrong account type !!. Please try Again")
         else:
             print("Invalid choice. Please choose a valid option.")
     elif choice == 2:
